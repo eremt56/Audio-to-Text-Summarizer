@@ -4,7 +4,7 @@ class TrainingSample:
     
     sampleInput = float()
     sampleTarget = float()
-    sampleigRate = float()
+    samplingRate = float()
 
     def __init__(self, sampleInput, samplingRate, sampleTarget):
         self.sampleInput = sampleInput
