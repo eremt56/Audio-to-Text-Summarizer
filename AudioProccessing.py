@@ -7,6 +7,7 @@ import os
 import matplotlib
 from matplotlib import pyplot as plt
 import TrainingSample as ts
+import pandas as pd
 
 # Extract data from .txt file, put in list of TrainingSample
 rootDirectory = "/home/eremt/Summer_Projects/Audio_to_Text_Summarizer/Small Training Set"
@@ -42,7 +43,7 @@ for i in range(len(sampleList)):
 for i in range(len(sampleList)):
     amountToPad = max - len(sampleList[i].sampleInput)
     sampleList[i].sampleInput = np.pad(sampleList[i].sampleInput, (0, amountToPad), 'constant', constant_values=(0, 0))
-    print(sampleList[i].sampleInput)
+    # print(sampleList[i].sampleInput)
     # sampleList[i].sampleInput = np.pad(sampleList[i].sampleInput, ((0, 0), (0, amountToPad)), 'constant', constant_values=(0))
     
 
@@ -51,20 +52,41 @@ for i in range(len(sampleList)):
 
 
 # Convert to audio Values to Spectrogram
-spectrogramArr = np.array(1)
+spectrogramArr = []
+spectrogram = tf.Tensor()
+
+file1 = open("smallDatasetX.txt", "a")
+file2 = open("smallDatasetY.txt", "a")
 
 for i in range(len(sampleList)):
 
     spectrogram = tfio.audio.spectrogram(sampleList[i].sampleInput, nfft=512, window=512, stride=256)
+
+
     mel_spectrogram = tfio.audio.melscale(spectrogram, rate=sampleList[i].samplingRate, mels=128, fmin=0, fmax=8000)
 
     dbscale_mel_spectrogram = tfio.audio.dbscale(mel_spectrogram, top_db=80)
 
     spectrogramArr = np.append(spectrogramArr, dbscale_mel_spectrogram)
 
+    dbscale_mel_spectrogram = tfio.audio.freq_mask(dbscale_mel_spectrogram, 1)
 
-plt.plot(spectrogramArr)
-plt.savefig("Test.png")
+    dbscale_mel_spectrogram = tfio.audio.time_mask(dbscale_mel_spectrogram, 1)
+
+    transferFile1 = tf.numpy_function(dbscale_mel_spectrogram, tf.float32)
+    transferFile2 = sampleList[i].sampleTarget
+
+
+    
+    file1.write(str(transferFile1))
+    file1.write("\n")
+    file2.write(transferFile2)
+    
+file1.close()
+file2.close()
+
+
+
 
 
 

@@ -3,7 +3,7 @@ import random
 class TrainingSample:
     
     sampleInput = float()
-    sampleTarget = float()
+    sampleTarget = str()
     samplingRate = float()
 
     def __init__(self, sampleInput, samplingRate, sampleTarget):
