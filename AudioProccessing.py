@@ -3,11 +3,13 @@ import tensorflow_io as tfio
 import tensorflow_datasets as tfds
 import librosa as rosa
 import numpy as np
+import sys
 import os
 import matplotlib
 from matplotlib import pyplot as plt
 import TrainingSample as ts
-import pandas as pd
+
+np.set_printoptions(threshold=sys.maxsize, suppress = True)
 
 # Extract data from .txt file, put in list of TrainingSample
 rootDirectory = "/home/eremt/Summer_Projects/Audio_to_Text_Summarizer/Small Training Set"
@@ -65,7 +67,7 @@ for i in range(len(sampleList)):
 
     mel_spectrogram = tfio.audio.melscale(spectrogram, rate=sampleList[i].samplingRate, mels=128, fmin=0, fmax=8000)
 
-    dbscale_mel_spectrogram = tfio.audio.dbscale(mel_spectrogram, top_db=80)
+    dbscale_mel_spectrogram = tfio.audio.dbscale(mel_spectrogram, top_db=99)
 
     spectrogramArr = np.append(spectrogramArr, dbscale_mel_spectrogram)
 
@@ -73,37 +75,16 @@ for i in range(len(sampleList)):
 
     dbscale_mel_spectrogram = tfio.audio.time_mask(dbscale_mel_spectrogram, 1)
 
-    transferFile1 = tf.numpy_function(dbscale_mel_spectrogram, tf.float32)
-    transferFile2 = sampleList[i].sampleTarget
+    mel = np.array(dbscale_mel_spectrogram)
 
+    file1.write(str(mel) + '\n\n\n')
 
-    
-    file1.write(str(transferFile1))
-    file1.write("\n")
-    file2.write(transferFile2)
+   
+    file2.write(sampleList[i].sampleTarget)
     
 file1.close()
 file2.close()
 
 
 
-
-
-
-
-
-# data = tfds.load('librispeech', builder_kwargs={'config': 'lazy_decode'})
-
-# text = np.array(data.size)
-
-# audio = np.array(data.size)
-
-# count = 0
-
-# for pnt in data:
-
-#     text[count] = pnt["text"]
-#     audio[count] = pnt["speech"]
-
-#     count+=1
 
